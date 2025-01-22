@@ -38,7 +38,7 @@ public class URLController {
             sb.append(CHARACTERS.charAt(index));
         }
         String pid = sb.toString();
-        
+
         shortUrl.setId(pid);
 
         ShortUrl res = shortUrlService.createLink(shortUrl);
