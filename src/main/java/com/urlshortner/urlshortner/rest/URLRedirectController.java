@@ -60,7 +60,7 @@ public class URLRedirectController {
         click.setCountry(country != null ? country : "Unknown");
         click.setClickTime(LocalDateTime.now());
         urlClickService.saveClick(click);
-
+        System.out.println("ip"+ipAddress);
         // Redirect to the original URL
         return new RedirectView(url.getLink());
     }
