@@ -66,9 +66,9 @@ public class URLRedirectController {
     }
 
     private DeviceType determineDeviceType(String userAgent) {
-        if (userAgent == null) return DeviceType.OTHER;
-        if (userAgent.toLowerCase().contains("mobile")) return DeviceType.MOBILE;
-        if (userAgent.toLowerCase().contains("tablet")) return DeviceType.TABLET;
-        return DeviceType.DESKTOP;
+        if (userAgent == null) return DeviceType.other;
+        if (userAgent.toLowerCase().contains("mobile")) return DeviceType.mobile;
+        if (userAgent.toLowerCase().contains("tablet")) return DeviceType.mobile;
+        return DeviceType.desktop;
     }
 }

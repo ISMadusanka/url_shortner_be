@@ -44,13 +44,13 @@ public class URLController {
             long totalClicks = urlClickService.countTotalClicks(path);
 
             // Clicks by device
-//            var clicksByDevice = urlClickService.getClicksByDevice(path);
+            var clicksByDevice = urlClickService.getClicksByDevice(path);
 
             // Clicks by country
             var clicksByCountry = urlClickService.getClicksByCountry(path);
 
             // Return stats as a response
-            return ResponseEntity.ok(new StatsResponse(totalClicks, null, clicksByCountry));
+            return ResponseEntity.ok(new StatsResponse(totalClicks, clicksByDevice, clicksByCountry));
 
 
         }catch (Exception e){
