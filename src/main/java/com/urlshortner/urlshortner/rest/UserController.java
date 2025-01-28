@@ -1,27 +1,28 @@
 package com.urlshortner.urlshortner.rest;
 
+import com.urlshortner.urlshortner.dao.VerificationRepository;
 import com.urlshortner.urlshortner.entity.User;
+import com.urlshortner.urlshortner.entity.Verification;
 import com.urlshortner.urlshortner.event.RegistrationCompleteEvent;
 import com.urlshortner.urlshortner.rest.request.RegistrationRequest;
 import com.urlshortner.urlshortner.service.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
     private UserService userService;
     private ApplicationEventPublisher publisher;
+    private VerificationRepository verificationRepository;
 
     @Autowired
-    public UserController(UserService userService, ApplicationEventPublisher publisher){
+    public UserController(UserService userService, ApplicationEventPublisher publisher, VerificationRepository verificationRepository){
         this.userService=userService;
         this.publisher=publisher;
+        this.verificationRepository=verificationRepository;
     };
 
     @PostMapping("/register")
@@ -33,6 +34,22 @@ public class UserController {
 
         return "success, check email";
 
+    }
+
+    @GetMapping("/verify")
+    public String verifyToken(@RequestParam("token") String token){
+        Verification verification = verificationRepository.findByToken(token);
+
+        if (verification.getUser().isEnabled()){
+            return "Account is already verified. Please log in!";
+        }
+
+        String verificationResult = userService.verifyToken(token);
+
+        if (verificationResult.equalsIgnoreCase("valid")){
+            return "Verification success";
+        }
+        return "Invalid";
     }
 
 
