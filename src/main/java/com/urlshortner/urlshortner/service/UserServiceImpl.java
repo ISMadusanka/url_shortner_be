@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
 
         var newUser = new User();
         newUser.setUsername(request.username());
-        newUser.setEmail(request.password());
+        newUser.setEmail(request.email());
         newUser.setPassword(passwordEncoder.encode(request.password()));
         newUser.setRole(request.role());
 
