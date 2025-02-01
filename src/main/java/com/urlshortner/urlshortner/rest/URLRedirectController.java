@@ -34,15 +34,6 @@ public class URLRedirectController {
         this.urlClickService=urlClickService;
     }
 
-//    @GetMapping("/{path}")
-//    public void autoDirect(@PathVariable String path, HttpServletResponse response) throws IOException {
-//        ShortUrl shortUrl = shortUrlService.findById(path);
-//        String redirectUrl = shortUrl.getLink();
-//        response.sendRedirect(redirectUrl);
-//    }
-
-
-
 
 
     @GetMapping("/{path}")

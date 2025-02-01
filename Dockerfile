@@ -1,5 +1,5 @@
-# Use the official Java image from the Docker Hub
-FROM openjdk:17-jdk-slim
+# Use Java 21
+FROM eclipse-temurin:21-jdk
 
 # Set the working directory inside the container
 WORKDIR /app
