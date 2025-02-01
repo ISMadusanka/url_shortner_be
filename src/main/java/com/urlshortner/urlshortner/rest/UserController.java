@@ -7,6 +7,7 @@ import com.urlshortner.urlshortner.event.RegistrationCompleteEvent;
 import com.urlshortner.urlshortner.rest.request.RegistrationRequest;
 import com.urlshortner.urlshortner.service.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.*;
@@ -50,6 +51,11 @@ public class UserController {
             return "Verification success";
         }
         return "Invalid";
+    }
+
+    @GetMapping("/session")
+    public String getSessionID(HttpSession session){
+        return session.getId();
     }
 
 
