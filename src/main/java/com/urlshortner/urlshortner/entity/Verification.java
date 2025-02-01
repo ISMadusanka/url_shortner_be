@@ -22,6 +22,8 @@ public class Verification {
     @JoinColumn(name = "user_id")
     private User user;
 
+    public Verification(){}
+
     public Verification(String token, User user) {
         super();
         this.token = token;

@@ -39,7 +39,7 @@ public class UserController {
     @GetMapping("/verify")
     public String verifyToken(@RequestParam("token") String token){
         Verification verification = verificationRepository.findByToken(token);
-
+        System.out.println("vv:"+verification.toString());
         if (verification.getUser().isEnabled()){
             return "Account is already verified. Please log in!";
         }
