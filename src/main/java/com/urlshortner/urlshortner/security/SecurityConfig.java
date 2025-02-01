@@ -10,6 +10,12 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -17,21 +23,37 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        config.setAllowedHeaders(Arrays.asList("*"));
+        config.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
+    @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable) // Disable CSRF protection
+        http
+                .cors(Customizer.withDefaults()) // Use Spring Security's CORS
+                .csrf(Customizer.withDefaults()) // Re-enable CSRF for form-based auth
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers(
-                                        "/api/short",          // Allow unauthenticated access to this endpoint
-                                        "/user/register",      // Allow unauthenticated access to this endpoint
-                                        "/user/verify",         // Allow unauthenticated access to this endpoint (query params allowed)
-                                        "/{id}"                // Allow unauthenticated access for random short IDs
-
+                                        "/api/short",
+                                        "/user/register",
+                                        "/user/verify",
+                                        "/{id}" // More specific path for short URLs
                                 ).permitAll()
-                                .anyRequest().authenticated() // Block all other endpoints unless authenticated
+                                .anyRequest().authenticated()
                 )
-                .formLogin(Customizer.withDefaults()) // Enable default form login
-                .logout(Customizer.withDefaults()); // Enable logout with default configurations
+                .formLogin(form -> form
+                        .defaultSuccessUrl("http://localhost:5173/", true)
+                        .permitAll()
+                )
+                .logout(Customizer.withDefaults());
         return http.build();
     }
 
