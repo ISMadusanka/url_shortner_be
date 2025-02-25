@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -84,9 +86,11 @@ public class URLController {
 //    }
 
     @PostMapping("/short")
-    public ResponseEntity<String> shortUrl(@RequestBody URL url){
+    @ResponseBody
+    public ResponseEntity<Map<String, String>> shortUrl(@RequestBody URL url){
+        Map<String, String> response = new HashMap<>();
+        System.out.println("URL"+url.toString());
         try{
-
 
         String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
         SecureRandom random = new SecureRandom();
@@ -103,12 +107,14 @@ public class URLController {
         urlDb.setPath(pid);
 
         urlService.saveUrl(urlDb);
+        response.put("url", "http://localhost:8080/"+ pid);
 
-        return ResponseEntity.ok("Shortened URL: www.localhost.com/8080/"+ pid);
+        return ResponseEntity.ok(response);
 
         }catch (Exception e){
             System.out.println(e.getMessage());
-            return ResponseEntity.ok(e.getMessage());
+            response.put("error",e.getMessage());
+            return ResponseEntity.ok(response);
         }
     }
 

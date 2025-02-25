@@ -38,7 +38,9 @@ public class SecurityConfig {
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(Customizer.withDefaults()) // Use Spring Security's CORS
-                .csrf(Customizer.withDefaults()) // Re-enable CSRF for form-based auth
+//                .csrf(Customizer.withDefaults()) // Re-enable CSRF for form-based auth
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/short"))
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers(

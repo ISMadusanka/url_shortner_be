@@ -41,19 +41,25 @@ public class URLRedirectController {
                                     @RequestHeader(value = "User-Agent", required = false) String userAgent,
                                     @RequestHeader(value = "X-Forwarded-For", required = false) String ipAddress,
                                     @RequestHeader(value = "Geo-Country", required = false) String country) {
-        // Find the original URL
-        URL url = urlService.findByPath(path).orElseThrow(() -> new RuntimeException("URL not found"));
+        try{
+            // Find the original URL
+            URL url = urlService.findByPath(path).orElseThrow(() -> new RuntimeException("URL not found"));
 
-        // Log the click
-        Click click = new Click();
-        click.setUrl(url);
-        click.setDeviceType(determineDeviceType(userAgent));
-        click.setCountry(country != null ? country : "Unknown");
-        click.setClickTime(LocalDateTime.now());
-        urlClickService.saveClick(click);
-        System.out.println("ip"+ipAddress);
-        // Redirect to the original URL
-        return new RedirectView(url.getLink());
+            // Log the click
+            Click click = new Click();
+            click.setUrl(url);
+            click.setDeviceType(determineDeviceType(userAgent));
+            click.setCountry(country != null ? country : "Unknown");
+            click.setClickTime(LocalDateTime.now());
+            urlClickService.saveClick(click);
+            System.out.println("ip"+ipAddress);
+            // Redirect to the original URL
+            return new RedirectView(url.getLink());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     private DeviceType determineDeviceType(String userAgent) {
