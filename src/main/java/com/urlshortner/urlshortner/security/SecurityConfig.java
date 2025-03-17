@@ -13,7 +13,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
 
@@ -22,45 +21,44 @@ import java.util.Arrays;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
-        config.setAllowedHeaders(Arrays.asList("*"));
-        config.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return source;
-    }
+        @Bean
+        public CorsConfigurationSource corsConfigurationSource() {
+                CorsConfiguration config = new CorsConfiguration();
+                config.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+                config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+                config.setAllowedHeaders(Arrays.asList("*"));
+                config.setAllowCredentials(true);
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", config);
+                return source;
+        }
 
-    @Bean
-    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .cors(Customizer.withDefaults()) // Use Spring Security's CORS
-//                .csrf(Customizer.withDefaults()) // Re-enable CSRF for form-based auth
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/short"))
-                .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests
-                                .requestMatchers(
-                                        "/api/short",
-                                        "/user/register",
-                                        "/user/verify",
-                                        "/{id}" // More specific path for short URLs
-                                ).permitAll()
-                                .anyRequest().authenticated()
-                )
-                .formLogin(form -> form
-                        .defaultSuccessUrl("http://localhost:5173/", true)
-                        .permitAll()
-                )
-                .logout(Customizer.withDefaults());
-        return http.build();
-    }
+        @Bean
+        SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+                http
+                                .cors(Customizer.withDefaults())
+                                .csrf(AbstractHttpConfigurer::disable) // Disable CSRF as requested
+                                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                                                .requestMatchers(
+                                                                "/",
+                                                                "/register",
+                                                                "/login",
+                                                                "/{id}",
+                                                                "/api/short",
+                                                                "/user/register",
+                                                                "/user/verify")
+                                                .permitAll()
+                                                .anyRequest().authenticated())
+                                .formLogin(form -> form
+                                                // .loginPage("/login") // Specify your custom login page
+                                                .defaultSuccessUrl("http://localhost:5173/", true)
+                                                .permitAll())
+                                .logout(Customizer.withDefaults());
+                return http.build();
+        }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
 }
