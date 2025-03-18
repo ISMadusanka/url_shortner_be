@@ -1,14 +1,10 @@
-# Use Java 21
-FROM eclipse-temurin:21-jdk
 
-# Set the working directory inside the container
-WORKDIR /app
+FROM ibm-semeru-runtimes:open-21-jdk-jammy AS build
+COPY . .
+RUN mvn clean package -DskipTests
 
-# Copy the packaged jar file into the container
-COPY target/urlshortner-0.0.1-SNAPSHOT.jar app.jar
+FROM openjdk:21-jdk
+COPY --from=build /target/urlshortner-0.0.1-SNAPSHOT.jar app.jar
 
-# Expose the port your app runs on (default Spring Boot port is 8080)
 EXPOSE 8080
-
-# Run the jar file
 ENTRYPOINT ["java", "-jar", "app.jar"]
